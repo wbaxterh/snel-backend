@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: AWS SAM template for deploying Node.js/Express API to Lambda
+
+Parameters:
+  BlockfrostApiKey:
+    Type: String
+    Description: "API Key for Blockfrost API"
+
+Resources:
+  SnelApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: server.handler
+      Runtime: nodejs18.x
+      CodeUri: ./src # Path to your backend code
+      MemorySize: 1024
+      Timeout: 120
+      Environment:
+        Variables:
+          BLOCKFROST_API_KEY: !Ref BlockfrostApiKey
+      Events:
+        ApiRoot:
+          Type: Api
+          Properties:
+            Path: /
+            Method: ANY
+        ApiHolders:
+          Type: Api
+          Properties:
+            Path: /api/snel-holders
+            Method: GET
+        ApiTotalSupply:
+          Type: Api
+          Properties:
+            Path: /api/snel-total-supply
+            Method: GET
+        ApiMarketCap:
+          Type: Api
+          Properties:
+            Path: /api/snel-marketcap
+            Method: GET
+        ApiVolume:
+          Type: Api
+          Properties:
+            Path: /api/snel-volume
+            Method: GET
+
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint URL for the Snel API"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
