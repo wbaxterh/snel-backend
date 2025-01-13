@@ -6,6 +6,18 @@ Parameters:
   BlockfrostApiKey:
     Type: String
     Description: "API Key for Blockfrost API"
+  DiscordBotToken:
+    Type: String
+    Description: "Token for the Discord bot"
+  DiscordChannelId:
+    Type: String
+    Description: "Channel ID for Discord notifications"
+  BlockfrostAuthToken:
+    Type: String
+    Description: "Auth token for Blockfrost webhooks"
+  BlockfrostWebhookIdentifier:
+    Type: String
+    Description: "Webhook identifier for Blockfrost"
 
 Resources:
   SnelApiFunction:
@@ -19,34 +31,46 @@ Resources:
       Environment:
         Variables:
           BLOCKFROST_API_KEY: !Ref BlockfrostApiKey
+          DISCORD_BOT_TOKEN: !Ref DiscordBotToken
+          DISCORD_CHANNEL_ID: !Ref DiscordChannelId
+          BLOCKFROST_AUTH_TOKEN: !Ref BlockfrostAuthToken
+          BLOCKFROST_WEBHOOK_IDENTIFIER: !Ref BlockfrostWebhookIdentifier
       Events:
         ApiRoot:
           Type: Api
           Properties:
+            RestApiId: !Ref SnelApi
             Path: /
             Method: ANY
         ApiHolders:
           Type: Api
           Properties:
+            RestApiId: !Ref SnelApi
             Path: /api/snel-holders
-            Method: GET
-        ApiTotalSupply:
-          Type: Api
-          Properties:
-            Path: /api/snel-total-supply
             Method: GET
         ApiMarketCap:
           Type: Api
           Properties:
+            RestApiId: !Ref SnelApi
             Path: /api/snel-marketcap
             Method: GET
-        ApiVolume:
+        ApiWebhook:
           Type: Api
           Properties:
-            Path: /api/snel-volume
-            Method: GET
+            RestApiId: !Ref SnelApi
+            Path: /api/webhook
+            Method: POST
+
+  SnelApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowOrigin: "'https://snel.fun'"
 
 Outputs:
   ApiUrl:
     Description: "API Gateway endpoint URL for the Snel API"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+    Value: !Sub "https://${SnelApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

@@ -24,6 +24,10 @@ sam deploy \
   --s3-bucket $S3_BUCKET \
   --capabilities CAPABILITY_IAM \
   --parameter-overrides ParameterKey=BlockfrostApiKey,ParameterValue=$BLOCKFROST_API_KEY \
+  ParameterKey=DiscordBotToken,ParameterValue=$DISCORD_BOT_TOKEN \
+    ParameterKey=DiscordChannelId,ParameterValue=$DISCORD_CHANNEL_ID \
+    ParameterKey=BlockfrostAuthToken,ParameterValue=$BLOCKFROST_AUTH_TOKEN \
+    ParameterKey=BlockfrostWebhookIdentifier,ParameterValue=$BLOCKFROST_WEBHOOK_IDENTIFIER \
   --region $AWS_REGION \
   --confirm-changeset
 
